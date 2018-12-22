@@ -28,6 +28,7 @@ object Interpreters {
             case GetServerTime => publicApi.getServerTime(headers)
             case GetAssetInfo(info, aclass, asset) =>
               publicApi.getAssetInfo(headers, info, aclass, asset)
+            case GetAssetPairs(pair) => publicApi.getAssetPairs(headers, pair)
           }
         }
     }
