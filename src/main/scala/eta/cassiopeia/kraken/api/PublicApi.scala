@@ -2,7 +2,7 @@ package eta.cassiopeia.kraken.api
 
 import eta.cassiopeia.kraken.KrakenApiUrls
 import eta.cassiopeia.kraken.KrakenResponses._
-import eta.cassiopeia.kraken.free.domain.{Asset, AssetPair, ServerTime}
+import eta.cassiopeia.kraken.free.domain.{Asset, AssetPair, ServerTime, Ticker}
 import scalaj.http.Http
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -42,5 +42,19 @@ class PublicApi(implicit apiUrls: KrakenApiUrls, ec: ExecutionContext)
       .headers(headers)
 
     toEntity[Map[String, AssetPair]](request.asString, decodeEntity)
+  }
+
+  def getTickerInformation(headers: Map[String, String],
+                           pair: List[(String, String)])
+    : Future[KrakenResponse[Map[String, Ticker]]] = {
+    val params: String = pair
+      .map(p => p._1 + p._2)
+      .mkString("?pair=", ",", "")
+
+    val request = Http(url = s"${apiUrls.baseUrl}/0/public/Ticker$params")
+      .method("GET")
+      .headers(headers)
+
+    toEntity[Map[String, Ticker]](request.asString, decodeEntity)
   }
 }

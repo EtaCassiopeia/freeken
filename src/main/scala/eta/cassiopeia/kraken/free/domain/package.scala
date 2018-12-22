@@ -100,4 +100,39 @@ package object domain {
         )
     }
   }
+
+  case class Ticker(askArray: List[String],
+                    bidArray: List[String],
+                    lastTradeClosed: List[String],
+                    volume: List[String],
+                    volumeWeightedAveragePrice: List[String],
+                    numberOfTrades: List[Int],
+                    low: List[String],
+                    high: List[String],
+                    openingPrice: String)
+
+  object Ticker {
+    implicit val decodeTicker: Decoder[Ticker] = Decoder.instance { c =>
+      for {
+        askArray <- c.downField("a").as[List[String]]
+        bidArray <- c.downField("b").as[List[String]]
+        lastTradeClosed <- c.downField("c").as[List[String]]
+        volume <- c.downField("v").as[List[String]]
+        volumeWeightedAveragePrice <- c.downField("p").as[List[String]]
+        numberOfTrades <- c.downField("t").as[List[Int]]
+        low <- c.downField("l").as[List[String]]
+        high <- c.downField("h").as[List[String]]
+        openingPrice <- c.downField("o").as[String]
+      } yield
+        Ticker(askArray,
+               bidArray,
+               lastTradeClosed,
+               volume,
+               volumeWeightedAveragePrice,
+               numberOfTrades,
+               low,
+               high,
+               openingPrice)
+    }
+  }
 }

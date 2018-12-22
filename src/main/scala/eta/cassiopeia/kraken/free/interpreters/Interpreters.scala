@@ -29,6 +29,8 @@ object Interpreters {
             case GetAssetInfo(info, aclass, asset) =>
               publicApi.getAssetInfo(headers, info, aclass, asset)
             case GetAssetPairs(pair) => publicApi.getAssetPairs(headers, pair)
+            case GetTickerInformation(pair) =>
+              publicApi.getTickerInformation(headers, pair)
           }
         }
     }
