@@ -3,8 +3,14 @@ package eta.cassiopeia.kraken
 import eta.cassiopeia.kraken.KrakenResponses.{KrakenIO, KrakenResponse}
 import eta.cassiopeia.kraken.app.KrakenOp
 import eta.cassiopeia.kraken.free.algebra.PublicOps
-import eta.cassiopeia.kraken.free.domain.ServerTime
+import eta.cassiopeia.kraken.free.domain.{Asset, ServerTime}
 
 class KrakenPublicAPI()(implicit O: PublicOps[KrakenOp]) {
   def getServerTime(): KrakenIO[KrakenResponse[ServerTime]] = O.getServerTime
+
+  def getAssetInfo(info: Option[String] = None,
+                   aclass: Option[String] = None,
+                   asset: Option[List[String]] = None)
+    : KrakenIO[KrakenResponse[Map[String, Asset]]] =
+    O.getAssetInfo(info, aclass, asset)
 }

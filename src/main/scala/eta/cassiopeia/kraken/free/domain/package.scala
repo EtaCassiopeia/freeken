@@ -26,4 +26,20 @@ package object domain {
       } yield ServerTime(unixTime, rfc1123)
     }
   }
+
+  case class Asset(aClass: String,
+                   altName: String,
+                   decimals: Int,
+                   displayDecimals: Int)
+
+  case object Asset {
+    implicit val decodeAsset: Decoder[Asset] = Decoder.instance { c =>
+      for {
+        aClass <- c.downField("aclass").as[String]
+        altName <- c.downField("altname").as[String]
+        decimals <- c.downField("decimals").as[Int]
+        displayDecimals <- c.downField("display_decimals").as[Int]
+      } yield Asset(aClass, altName, decimals, displayDecimals)
+    }
+  }
 }

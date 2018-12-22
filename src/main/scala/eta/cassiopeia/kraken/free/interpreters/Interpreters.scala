@@ -5,7 +5,7 @@ import cats.~>
 import eta.cassiopeia.kraken.KrakenApiUrls
 import eta.cassiopeia.kraken.api.PublicApi
 import eta.cassiopeia.kraken.app.KrakenOp
-import eta.cassiopeia.kraken.free.algebra.{GetServerTime, PrivateOp, PublicOp}
+import eta.cassiopeia.kraken.free.algebra._
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -26,6 +26,8 @@ object Interpreters {
         Kleisli[Future, Map[String, String], A] { headers =>
           fa match {
             case GetServerTime => publicApi.getServerTime(headers)
+            case GetAssetInfo(info, aclass, asset) =>
+              publicApi.getAssetInfo(headers, info, aclass, asset)
           }
         }
     }
