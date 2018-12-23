@@ -2,7 +2,7 @@ package eta.cassiopeia.kraken.api
 
 import eta.cassiopeia.kraken.KrakenApiUrls
 import eta.cassiopeia.kraken.KrakenResponses._
-import eta.cassiopeia.kraken.free.domain.{Asset, AssetPair, ServerTime, Ticker}
+import eta.cassiopeia.kraken.free.domain._
 import scalaj.http.Http
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -57,4 +57,21 @@ class PublicApi(implicit apiUrls: KrakenApiUrls, ec: ExecutionContext)
 
     toEntity[Map[String, Ticker]](request.asString, decodeEntity)
   }
+
+  def getOHLCdata(
+      headers: Map[String, String],
+      currency: String,
+      respectToCurrency: String,
+      interval: Option[Int],
+      timeStamp: Option[Long]): Future[KrakenResponse[DataWithTime[OHLC]]] = {
+
+    val request = Http(url =
+      s"${apiUrls.baseUrl}/0/public/OHLC?pair=${currency + respectToCurrency}${interval.fold("")(i =>
+        s"&interval=$i")}${timeStamp.fold("")(t => s"&since=${t.toString}")}")
+      .method("GET")
+      .headers(headers)
+
+    toEntity[DataWithTime[OHLC]](request.asString, decodeEntity)
+  }
+
 }

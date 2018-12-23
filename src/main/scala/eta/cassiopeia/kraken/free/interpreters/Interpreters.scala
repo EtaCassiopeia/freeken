@@ -31,6 +31,15 @@ object Interpreters {
             case GetAssetPairs(pair) => publicApi.getAssetPairs(headers, pair)
             case GetTickerInformation(pair) =>
               publicApi.getTickerInformation(headers, pair)
+            case GetOHLCdata(currency,
+                             respectToCurrency,
+                             interval,
+                             timeStamp) =>
+              publicApi.getOHLCdata(headers,
+                                    currency,
+                                    respectToCurrency,
+                                    interval,
+                                    timeStamp)
           }
         }
     }

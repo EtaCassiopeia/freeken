@@ -3,7 +3,7 @@ package eta.cassiopeia.kraken
 import eta.cassiopeia.kraken.KrakenResponses.{KrakenIO, KrakenResponse}
 import eta.cassiopeia.kraken.app.KrakenOp
 import eta.cassiopeia.kraken.free.algebra.PublicOps
-import eta.cassiopeia.kraken.free.domain.{Asset, AssetPair, ServerTime, Ticker}
+import eta.cassiopeia.kraken.free.domain._
 
 class KrakenPublicAPI()(implicit O: PublicOps[KrakenOp]) {
   def getServerTime(): KrakenIO[KrakenResponse[ServerTime]] = O.getServerTime
@@ -20,4 +20,11 @@ class KrakenPublicAPI()(implicit O: PublicOps[KrakenOp]) {
   def getTickerInformation(pair: List[(String, String)])
     : KrakenIO[KrakenResponse[Map[String, Ticker]]] =
     O.getTickerInformation(pair)
+
+  def getOHLCdata(currency: String,
+                  respectToCurrency: String,
+                  interval: Option[Int] = None,
+                  timeStamp: Option[Long] = None)
+    : KrakenIO[KrakenResponse[DataWithTime[OHLC]]] =
+    O.getOHLCdata(currency, respectToCurrency, interval, timeStamp)
 }

@@ -1,6 +1,6 @@
 package eta.cassiopeia.kraken.free
 
-import io.circe.Decoder
+import io.circe.{Decoder, DecodingFailure}
 
 package object domain {
 
@@ -133,6 +133,48 @@ package object domain {
                low,
                high,
                openingPrice)
+    }
+  }
+
+  case class DataWithTime[T](data: Map[String, Seq[T]], timeStamp: Long)
+
+  object DataWithTime {
+    implicit def decodeDataWithTime[T: Decoder]: Decoder[DataWithTime[T]] =
+      Decoder.instance { c =>
+        val key = c.keys.get.toList.head
+        for {
+          data <- c.downField(key).as[List[T]]
+          timeStamp <- c.downField("last").as[Long]
+        } yield DataWithTime(Map(key -> data), timeStamp)
+      }
+  }
+
+  case class OHLC(time: Long,
+                  open: String,
+                  high: String,
+                  low: String,
+                  close: String,
+                  vwap: String,
+                  volume: String,
+                  count: Int)
+
+  object OHLC {
+    implicit val decodeOHLC: Decoder[OHLC] = Decoder.instance { c =>
+      c.focus.flatMap(_.asArray) match {
+        case Some(
+            fnTime +: fnOpen +: fnHigh +: fnLow +: fnClose +: fnVwap +: fnVolume +: fnCount +: rest) =>
+          for {
+            time <- fnTime.as[Long]
+            open <- fnOpen.as[String]
+            high <- fnHigh.as[String]
+            low <- fnLow.as[String]
+            close <- fnClose.as[String]
+            vwap <- fnVwap.as[String]
+            volume <- fnVolume.as[String]
+            count <- fnCount.as[Int]
+          } yield OHLC(time, open, high, low, close, vwap, volume, count)
+        case None => Left(DecodingFailure("OHLC", c.history))
+      }
     }
   }
 }

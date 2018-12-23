@@ -3,7 +3,7 @@ package eta.cassiopeia.kraken.free.algebra
 import cats.InjectK
 import cats.free.Free
 import eta.cassiopeia.kraken.KrakenResponses.KrakenResponse
-import eta.cassiopeia.kraken.free.domain.{Asset, AssetPair, ServerTime, Ticker}
+import eta.cassiopeia.kraken.free.domain._
 
 import scala.language.higherKinds
 
@@ -22,6 +22,12 @@ case class GetAssetPairs(pair: Option[List[(String, String)]])
 case class GetTickerInformation(pair: List[(String, String)])
     extends PublicOp[KrakenResponse[Map[String, Ticker]]]
 
+case class GetOHLCdata(currency: String,
+                       respectToCurrency: String,
+                       interval: Option[Int] = None,
+                       timeStamp: Option[Long] = None)
+    extends PublicOp[KrakenResponse[DataWithTime[OHLC]]]
+
 class PublicOps[F[_]](implicit I: InjectK[PublicOp, F]) {
   def getServerTime: Free[F, KrakenResponse[ServerTime]] =
     Free.inject[PublicOp, F](GetServerTime)
@@ -39,6 +45,14 @@ class PublicOps[F[_]](implicit I: InjectK[PublicOp, F]) {
   def getTickerInformation(pair: List[(String, String)])
     : Free[F, KrakenResponse[Map[String, Ticker]]] =
     Free.inject[PublicOp, F](GetTickerInformation(pair))
+
+  def getOHLCdata(
+      currency: String,
+      respectToCurrency: String,
+      interval: Option[Int],
+      timeStamp: Option[Long]): Free[F, KrakenResponse[DataWithTime[OHLC]]] =
+    Free.inject[PublicOp, F](
+      GetOHLCdata(currency, respectToCurrency, interval, timeStamp))
 }
 
 object PublicOps {
