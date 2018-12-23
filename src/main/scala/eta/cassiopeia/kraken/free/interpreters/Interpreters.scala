@@ -55,6 +55,12 @@ object Interpreters {
                                         currency,
                                         respectToCurrency,
                                         timeStamp)
+
+            case GetRecentSpreadData(currency, respectToCurrency, timeStamp) =>
+              publicApi.getRecentSpreadData(headers,
+                                            currency,
+                                            respectToCurrency,
+                                            timeStamp)
           }
         }
     }

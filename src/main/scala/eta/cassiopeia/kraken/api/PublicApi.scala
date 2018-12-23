@@ -9,6 +9,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class PublicApi(implicit apiUrls: KrakenApiUrls, ec: ExecutionContext)
     extends HttpJSupport {
+
   def getServerTime(
       headers: Map[String, String]): Future[KrakenResponse[ServerTime]] = {
     val request = Http(url = s"${apiUrls.baseUrl}/0/public/Time")
@@ -102,6 +103,21 @@ class PublicApi(implicit apiUrls: KrakenApiUrls, ec: ExecutionContext)
       .headers(headers)
 
     toEntity[DataWithTime[RecentTrade]](request.asString, decodeEntity)
+  }
+
+  def getRecentSpreadData(headers: Map[String, String],
+                          currency: String,
+                          respectToCurrency: String,
+                          timeStamp: Option[Long])
+    : Future[KrakenResponse[DataWithTime[RecentSpread]]] = {
+
+    val request = Http(url =
+      s"${apiUrls.baseUrl}/0/public/Spread?pair=${currency + respectToCurrency}${timeStamp
+        .fold("")(t => s"&since=${t.toString}")}")
+      .method("GET")
+      .headers(headers)
+
+    toEntity[DataWithTime[RecentSpread]](request.asString, decodeEntity)
   }
 
 }

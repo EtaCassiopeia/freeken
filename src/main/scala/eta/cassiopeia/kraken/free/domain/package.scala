@@ -233,4 +233,22 @@ package object domain {
         }
     }
   }
+
+  case class RecentSpread(time: Long, bid: String, ask: String)
+
+  object RecentSpread {
+    implicit val decodeRecentSpread: Decoder[RecentSpread] = Decoder.instance {
+      c =>
+        c.focus.flatMap(_.asArray) match {
+          case Some(fnTime +: fnBid +: fnAsk +: _) =>
+            for {
+              time <- fnTime.as[Long]
+              bid <- fnBid.as[String]
+              ask <- fnAsk.as[String]
+            } yield RecentSpread(time, bid, ask)
+          case None => Left(DecodingFailure("RecentSpread", c.history))
+        }
+    }
+  }
+
 }

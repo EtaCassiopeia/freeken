@@ -38,6 +38,11 @@ case class GetRecentTrades(currency: String,
                            timeStamp: Option[Long])
     extends PublicOp[KrakenResponse[DataWithTime[RecentTrade]]]
 
+case class GetRecentSpreadData(currency: String,
+                               respectToCurrency: String,
+                               timeStamp: Option[Long])
+    extends PublicOp[KrakenResponse[DataWithTime[RecentSpread]]]
+
 class PublicOps[F[_]](implicit I: InjectK[PublicOp, F]) {
   def getServerTime: Free[F, KrakenResponse[ServerTime]] =
     Free.inject[PublicOp, F](GetServerTime)
@@ -76,6 +81,13 @@ class PublicOps[F[_]](implicit I: InjectK[PublicOp, F]) {
     : Free[F, KrakenResponse[DataWithTime[RecentTrade]]] =
     Free.inject[PublicOp, F](
       GetRecentTrades(currency, respectToCurrency, timeStamp))
+
+  def getRecentSpreadData(currency: String,
+                          respectToCurrency: String,
+                          timeStamp: Option[Long])
+    : Free[F, KrakenResponse[DataWithTime[RecentSpread]]] =
+    Free.inject[PublicOp, F](
+      GetRecentSpreadData(currency, respectToCurrency, timeStamp))
 }
 
 object PublicOps {

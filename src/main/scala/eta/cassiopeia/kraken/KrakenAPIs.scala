@@ -40,4 +40,10 @@ class KrakenPublicAPI()(implicit O: PublicOps[KrakenOp]) {
     : KrakenIO[KrakenResponse[DataWithTime[RecentTrade]]] =
     O.getRecentTrades(currency, respectToCurrency, timeStamp)
 
+  def getRecentSpreadData(currency: String,
+                          respectToCurrency: String,
+                          timeStamp: Option[Long] = None)
+    : KrakenIO[KrakenResponse[DataWithTime[RecentSpread]]] =
+    O.getRecentSpreadData(currency, respectToCurrency, timeStamp)
+
 }
