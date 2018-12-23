@@ -3,7 +3,7 @@ package eta.cassiopeia.kraken.free.interpreters
 import cats.data.Kleisli
 import cats.~>
 import eta.cassiopeia.kraken.KrakenApiUrls
-import eta.cassiopeia.kraken.api.PublicApi
+import eta.cassiopeia.kraken.api.{PrivateApi, PublicApi}
 import eta.cassiopeia.kraken.app.KrakenOp
 import eta.cassiopeia.kraken.free.algebra._
 
@@ -23,42 +23,36 @@ object Interpreters {
       val publicApi = new PublicApi()
 
       override def apply[A](fa: PublicOp[A]): K[A] =
-        Kleisli[Future, Map[String, String], A] { headers =>
+        Kleisli[Future, Map[String, String], A] { credentials =>
           fa match {
-            case GetServerTime => publicApi.getServerTime(headers)
+            case GetServerTime => publicApi.getServerTime()
 
             case GetAssetInfo(info, aclass, asset) =>
-              publicApi.getAssetInfo(headers, info, aclass, asset)
-            case GetAssetPairs(pair) => publicApi.getAssetPairs(headers, pair)
+              publicApi.getAssetInfo(info, aclass, asset)
+
+            case GetAssetPairs(pair) =>
+              publicApi.getAssetPairs(pair)
 
             case GetTickerInformation(pair) =>
-              publicApi.getTickerInformation(headers, pair)
+              publicApi.getTickerInformation(pair)
 
             case GetOHLCdata(currency,
                              respectToCurrency,
                              interval,
                              timeStamp) =>
-              publicApi.getOHLCdata(headers,
-                                    currency,
+              publicApi.getOHLCdata(currency,
                                     respectToCurrency,
                                     interval,
                                     timeStamp)
 
             case GetOrderBook(currency, respectToCurrency, count) =>
-              publicApi.getOrderBook(headers,
-                                     currency,
-                                     respectToCurrency,
-                                     count)
+              publicApi.getOrderBook(currency, respectToCurrency, count)
 
             case GetRecentTrades(currency, respectToCurrency, timeStamp) =>
-              publicApi.getRecentTrades(headers,
-                                        currency,
-                                        respectToCurrency,
-                                        timeStamp)
+              publicApi.getRecentTrades(currency, respectToCurrency, timeStamp)
 
             case GetRecentSpreadData(currency, respectToCurrency, timeStamp) =>
-              publicApi.getRecentSpreadData(headers,
-                                            currency,
+              publicApi.getRecentSpreadData(currency,
                                             respectToCurrency,
                                             timeStamp)
           }
@@ -68,6 +62,13 @@ object Interpreters {
   private def privateOpsInterpreter(implicit apiUrls: KrakenApiUrls,
                                     ec: ExecutionContext): PrivateOp ~> K =
     new (PrivateOp ~> K) {
-      override def apply[A](fa: PrivateOp[A]): K[A] = ???
+      val privateApi = new PrivateApi()
+
+      override def apply[A](fa: PrivateOp[A]): K[A] =
+        Kleisli[Future, Map[String, String], A] { credentials =>
+          fa match {
+            case GetAccountBalance => privateApi.getAccountBalance(credentials)
+          }
+        }
     }
 }

@@ -9,7 +9,8 @@ import cats.implicits._
 import scala.concurrent.{ExecutionContext, Future}
 
 class Kraken() {
-  val public = new KrakenPublicAPI()
+  val publicApi = new KrakenPublicAPI()
+  val privateApi = new KrakenPrivateAPI()
 }
 
 object Kraken {
@@ -22,9 +23,8 @@ object Kraken {
       : Kleisli[Future, Map[String, String], KrakenResponse[A]] =
       kio foldMap Interpreters.futureInterpreter
 
-    def exec(headers: Map[String, String] = Map())(
+    def exec(credentials: Map[String, String] = Map())(
         implicit ec: ExecutionContext): Future[KrakenResponse[A]] =
-      execK.run(headers)
-
+      execK.run(credentials)
   }
 }

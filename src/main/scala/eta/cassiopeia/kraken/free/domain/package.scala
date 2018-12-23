@@ -3,7 +3,6 @@ package eta.cassiopeia.kraken.free
 import io.circe.{Decoder, DecodingFailure}
 
 package object domain {
-
   case class Response[T](error: List[String], result: Option[T])
 
   object Response {

@@ -2,7 +2,7 @@ package eta.cassiopeia.kraken
 
 import eta.cassiopeia.kraken.KrakenResponses.{KrakenIO, KrakenResponse}
 import eta.cassiopeia.kraken.app.KrakenOp
-import eta.cassiopeia.kraken.free.algebra.PublicOps
+import eta.cassiopeia.kraken.free.algebra.{PrivateOps, PublicOps}
 import eta.cassiopeia.kraken.free.domain._
 
 class KrakenPublicAPI()(implicit O: PublicOps[KrakenOp]) {
@@ -46,4 +46,9 @@ class KrakenPublicAPI()(implicit O: PublicOps[KrakenOp]) {
     : KrakenIO[KrakenResponse[DataWithTime[RecentSpread]]] =
     O.getRecentSpreadData(currency, respectToCurrency, timeStamp)
 
+}
+
+class KrakenPrivateAPI()(implicit O: PrivateOps[KrakenOp]) {
+  def getAccountBalance(): KrakenIO[KrakenResponse[Map[String, String]]] =
+    O.getAccountBalance
 }

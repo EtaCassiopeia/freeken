@@ -13,5 +13,6 @@ libraryDependencies ++= Seq(
   "io.circe" %% "circe-core" % circeVersion,
   "io.circe" %% "circe-generic" % circeVersion,
   "io.circe" %% "circe-parser" % circeVersion,
-  "org.scalaj" %% "scalaj-http" % "2.4.1"
+  "org.scalaj" %% "scalaj-http" % "2.4.1",
+  "commons-codec" % "commons-codec" % "1.11"
 )
