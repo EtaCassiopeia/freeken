@@ -201,4 +201,36 @@ package object domain {
       Decoder.forProduct2("asks", "bids")(AsksAndBids.apply)
     }
   }
+
+  case class RecentTrade(price: String,
+                         volume: String,
+                         time: Double,
+                         buyOrSell: String,
+                         orderType: String,
+                         miscellaneous: String)
+
+  object RecentTrade {
+    implicit val decodeRecentTrade: Decoder[RecentTrade] = Decoder.instance {
+      c =>
+        c.focus.flatMap(_.asArray) match {
+          case Some(
+              fnPrice +: fnVolume +: fnTime +: fnBuyOrSell +: fnOrderType +: fnMiscellaneous +: _) =>
+            for {
+              price <- fnPrice.as[String]
+              volume <- fnVolume.as[String]
+              time <- fnTime.as[Double]
+              buyOrSell <- fnBuyOrSell.as[String]
+              orderType <- fnOrderType.as[String]
+              miscellaneous <- fnMiscellaneous.as[String]
+            } yield
+              RecentTrade(price,
+                          volume,
+                          time,
+                          buyOrSell,
+                          orderType,
+                          miscellaneous)
+          case None => Left(DecodingFailure("RecentTrade", c.history))
+        }
+    }
+  }
 }

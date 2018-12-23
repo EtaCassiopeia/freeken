@@ -26,11 +26,14 @@ object Interpreters {
         Kleisli[Future, Map[String, String], A] { headers =>
           fa match {
             case GetServerTime => publicApi.getServerTime(headers)
+
             case GetAssetInfo(info, aclass, asset) =>
               publicApi.getAssetInfo(headers, info, aclass, asset)
             case GetAssetPairs(pair) => publicApi.getAssetPairs(headers, pair)
+
             case GetTickerInformation(pair) =>
               publicApi.getTickerInformation(headers, pair)
+
             case GetOHLCdata(currency,
                              respectToCurrency,
                              interval,
@@ -40,11 +43,18 @@ object Interpreters {
                                     respectToCurrency,
                                     interval,
                                     timeStamp)
+
             case GetOrderBook(currency, respectToCurrency, count) =>
               publicApi.getOrderBook(headers,
                                      currency,
                                      respectToCurrency,
                                      count)
+
+            case GetRecentTrades(currency, respectToCurrency, timeStamp) =>
+              publicApi.getRecentTrades(headers,
+                                        currency,
+                                        respectToCurrency,
+                                        timeStamp)
           }
         }
     }

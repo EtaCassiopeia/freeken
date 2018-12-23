@@ -33,4 +33,11 @@ class KrakenPublicAPI()(implicit O: PublicOps[KrakenOp]) {
                    count: Option[Int] = None)
     : KrakenIO[KrakenResponse[Map[String, AsksAndBids]]] =
     O.getOrderBook(currency, respectToCurrency, count)
+
+  def getRecentTrades(currency: String,
+                      respectToCurrency: String,
+                      timeStamp: Option[Long] = None)
+    : KrakenIO[KrakenResponse[DataWithTime[RecentTrade]]] =
+    O.getRecentTrades(currency, respectToCurrency, timeStamp)
+
 }

@@ -33,6 +33,11 @@ case class GetOrderBook(currency: String,
                         count: Option[Int])
     extends PublicOp[KrakenResponse[Map[String, AsksAndBids]]]
 
+case class GetRecentTrades(currency: String,
+                           respectToCurrency: String,
+                           timeStamp: Option[Long])
+    extends PublicOp[KrakenResponse[DataWithTime[RecentTrade]]]
+
 class PublicOps[F[_]](implicit I: InjectK[PublicOp, F]) {
   def getServerTime: Free[F, KrakenResponse[ServerTime]] =
     Free.inject[PublicOp, F](GetServerTime)
@@ -64,6 +69,13 @@ class PublicOps[F[_]](implicit I: InjectK[PublicOp, F]) {
       respectToCurrency: String,
       count: Option[Int]): Free[F, KrakenResponse[Map[String, AsksAndBids]]] =
     Free.inject[PublicOp, F](GetOrderBook(currency, respectToCurrency, count))
+
+  def getRecentTrades(currency: String,
+                      respectToCurrency: String,
+                      timeStamp: Option[Long])
+    : Free[F, KrakenResponse[DataWithTime[RecentTrade]]] =
+    Free.inject[PublicOp, F](
+      GetRecentTrades(currency, respectToCurrency, timeStamp))
 }
 
 object PublicOps {

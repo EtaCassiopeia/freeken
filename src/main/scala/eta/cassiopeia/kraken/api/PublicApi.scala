@@ -89,4 +89,19 @@ class PublicApi(implicit apiUrls: KrakenApiUrls, ec: ExecutionContext)
     toEntity[Map[String, AsksAndBids]](request.asString, decodeEntity)
   }
 
+  def getRecentTrades(headers: Map[String, String],
+                      currency: String,
+                      respectToCurrency: String,
+                      timeStamp: Option[Long])
+    : Future[KrakenResponse[DataWithTime[RecentTrade]]] = {
+
+    val request = Http(url =
+      s"${apiUrls.baseUrl}/0/public/Trades?pair=${currency + respectToCurrency}${timeStamp
+        .fold("")(t => s"&since=${t.toString}")}")
+      .method("GET")
+      .headers(headers)
+
+    toEntity[DataWithTime[RecentTrade]](request.asString, decodeEntity)
+  }
+
 }
