@@ -27,4 +27,10 @@ class KrakenPublicAPI()(implicit O: PublicOps[KrakenOp]) {
                   timeStamp: Option[Long] = None)
     : KrakenIO[KrakenResponse[DataWithTime[OHLC]]] =
     O.getOHLCdata(currency, respectToCurrency, interval, timeStamp)
+
+  def getOrderBook(currency: String,
+                   respectToCurrency: String,
+                   count: Option[Int] = None)
+    : KrakenIO[KrakenResponse[Map[String, AsksAndBids]]] =
+    O.getOrderBook(currency, respectToCurrency, count)
 }

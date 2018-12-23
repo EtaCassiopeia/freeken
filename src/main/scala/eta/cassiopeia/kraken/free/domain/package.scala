@@ -162,7 +162,7 @@ package object domain {
     implicit val decodeOHLC: Decoder[OHLC] = Decoder.instance { c =>
       c.focus.flatMap(_.asArray) match {
         case Some(
-            fnTime +: fnOpen +: fnHigh +: fnLow +: fnClose +: fnVwap +: fnVolume +: fnCount +: rest) =>
+            fnTime +: fnOpen +: fnHigh +: fnLow +: fnClose +: fnVwap +: fnVolume +: fnCount +: _) =>
           for {
             time <- fnTime.as[Long]
             open <- fnOpen.as[String]
@@ -175,6 +175,30 @@ package object domain {
           } yield OHLC(time, open, high, low, close, vwap, volume, count)
         case None => Left(DecodingFailure("OHLC", c.history))
       }
+    }
+  }
+
+  case class BookEntry(price: String, volume: String, timestamp: Long)
+
+  object BookEntry {
+    implicit val decodeBookEntry: Decoder[BookEntry] = Decoder.instance { c =>
+      c.focus.flatMap(_.asArray) match {
+        case Some(fnPrice +: fnVolume +: fnTimestamp +: _) =>
+          for {
+            price <- fnPrice.as[String]
+            volume <- fnVolume.as[String]
+            timestamp <- fnTimestamp.as[Long]
+          } yield BookEntry(price, volume, timestamp)
+        case None => Left(DecodingFailure("BookEntry", c.history))
+      }
+    }
+  }
+
+  case class AsksAndBids(asks: Seq[BookEntry], bids: Seq[BookEntry])
+
+  object AsksAndBids {
+    implicit val decodeAsksAndBids: Decoder[AsksAndBids] = {
+      Decoder.forProduct2("asks", "bids")(AsksAndBids.apply)
     }
   }
 }

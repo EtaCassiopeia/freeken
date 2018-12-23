@@ -40,6 +40,11 @@ object Interpreters {
                                     respectToCurrency,
                                     interval,
                                     timeStamp)
+            case GetOrderBook(currency, respectToCurrency, count) =>
+              publicApi.getOrderBook(headers,
+                                     currency,
+                                     respectToCurrency,
+                                     count)
           }
         }
     }

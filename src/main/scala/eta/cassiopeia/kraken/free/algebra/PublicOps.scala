@@ -28,6 +28,11 @@ case class GetOHLCdata(currency: String,
                        timeStamp: Option[Long] = None)
     extends PublicOp[KrakenResponse[DataWithTime[OHLC]]]
 
+case class GetOrderBook(currency: String,
+                        respectToCurrency: String,
+                        count: Option[Int])
+    extends PublicOp[KrakenResponse[Map[String, AsksAndBids]]]
+
 class PublicOps[F[_]](implicit I: InjectK[PublicOp, F]) {
   def getServerTime: Free[F, KrakenResponse[ServerTime]] =
     Free.inject[PublicOp, F](GetServerTime)
@@ -53,6 +58,12 @@ class PublicOps[F[_]](implicit I: InjectK[PublicOp, F]) {
       timeStamp: Option[Long]): Free[F, KrakenResponse[DataWithTime[OHLC]]] =
     Free.inject[PublicOp, F](
       GetOHLCdata(currency, respectToCurrency, interval, timeStamp))
+
+  def getOrderBook(
+      currency: String,
+      respectToCurrency: String,
+      count: Option[Int]): Free[F, KrakenResponse[Map[String, AsksAndBids]]] =
+    Free.inject[PublicOp, F](GetOrderBook(currency, respectToCurrency, count))
 }
 
 object PublicOps {

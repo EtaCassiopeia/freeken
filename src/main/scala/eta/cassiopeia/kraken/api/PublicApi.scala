@@ -74,4 +74,19 @@ class PublicApi(implicit apiUrls: KrakenApiUrls, ec: ExecutionContext)
     toEntity[DataWithTime[OHLC]](request.asString, decodeEntity)
   }
 
+  def getOrderBook(
+      headers: Map[String, String],
+      currency: String,
+      respectToCurrency: String,
+      count: Option[Int]): Future[KrakenResponse[Map[String, AsksAndBids]]] = {
+
+    val request = Http(url =
+      s"${apiUrls.baseUrl}/0/public/Depth?pair=${currency + respectToCurrency}${count
+        .fold("")(i => s"&count=$i")}")
+      .method("GET")
+      .headers(headers)
+
+    toEntity[Map[String, AsksAndBids]](request.asString, decodeEntity)
+  }
+
 }
