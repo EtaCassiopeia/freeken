@@ -1,5 +1,9 @@
 package eta.cassiopeia.kraken.free
 
+import eta.cassiopeia.kraken.free.domain.BuyOrSell.BuyOrSell
+import eta.cassiopeia.kraken.free.domain.OrderStatus
+import eta.cassiopeia.kraken.free.domain.OrderStatus.OrderStatus
+import eta.cassiopeia.kraken.free.domain.OrderType.OrderType
 import io.circe.{Decoder, DecodingFailure}
 
 package object domain {
@@ -286,5 +290,97 @@ package object domain {
             marginLevel
           )
     }
+  }
+
+  object OrderStatus extends Enumeration {
+    type OrderStatus = Value
+    val pending, open, closed, canceled, expired = Value
+
+    implicit val decodeOderStatus: Decoder[OrderStatus.Value] =
+      Decoder.enumDecoder(OrderStatus)
+  }
+
+  object BuyOrSell extends Enumeration {
+    type BuyOrSell = Value
+    val buy, sell = Value
+
+    implicit val decodeBuyOrSell: Decoder[BuyOrSell.Value] =
+      Decoder.enumDecoder(BuyOrSell)
+  }
+
+  object OrderType extends Enumeration {
+    type OrderType = Value
+    val market, limit, stop_loss, take_profit, stop_loss_profit,
+    stop_loss_profit_limit, stop_loss_limit, take_profit_limit, trailing_stop,
+    trailing_stop_limit, stop_loss_and_limit, settle_position = Value
+
+    implicit val decodeOrderType: Decoder[OrderType.Value] =
+      Decoder.enumDecoder(OrderType)
+  }
+
+  case class OrderDescription(pair: String,
+                              buyOrSell: BuyOrSell,
+                              orderType: OrderType,
+                              price: String,
+                              price2: String,
+                              leverage: String,
+                              order: String)
+
+  object OrderDescription {
+    implicit val decodeOrder: Decoder[OrderDescription] =
+      Decoder.forProduct7("pair",
+                          "type",
+                          "ordertype",
+                          "price",
+                          "price2",
+                          "leverage",
+                          "order")(OrderDescription.apply)
+  }
+
+  case class Order(referralTransactionId: Option[String],
+                   userReferenceId: Option[String],
+                   status: OrderStatus,
+                   timestamp: Double,
+                   startTime: Double,
+                   expireTime: Double,
+                   description: OrderDescription,
+                   volume: String,
+                   volumeExecuted: String,
+                   cost: String,
+                   fee: String,
+                   averagePrice: String,
+                   stopPrice: Option[String],
+                   limitPrice: Option[String],
+                   misc: String,
+                   orderFlags: String,
+                   trades: Option[List[String]])
+
+  object Order {
+    implicit val decodeOrder: Decoder[Order] = Decoder.forProduct17(
+      "refid",
+      "userref",
+      "status",
+      "opentm",
+      "starttm",
+      "expiretm",
+      "descr",
+      "vol",
+      "vol_exec",
+      "cost",
+      "fee",
+      "price",
+      "stopprice",
+      "limitprice",
+      "misc",
+      "oflags",
+      "trades"
+    )(Order.apply)
+  }
+
+  case class OpenOrder(open: Option[Map[String, Order]])
+
+  object OpenOrder {
+    implicit val decodeOpenOrder: Decoder[OpenOrder] =
+      Decoder.forProduct1("open")(OpenOrder.apply)
   }
 }

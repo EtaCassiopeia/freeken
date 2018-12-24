@@ -39,7 +39,8 @@ trait HttpJSupport {
     })
 
   def decodeEntity[A: Decoder](response: HttpResponse[String])(
-      implicit D: Decoder[Response[A]]): KrakenResponse[A] =
+      implicit D: Decoder[Response[A]]): KrakenResponse[A] = {
+    println(response.body)
     decode[Response[A]](response.body)
       .bimap(
         e => JsonParsingException(e.getMessage, response.body),
@@ -49,10 +50,11 @@ trait HttpJSupport {
         _.result.isDefined,
         _.result.get,
         e => JsonParsingException(e.error.mkString(","), response.body))
+  }
 
   implicit class ParameterOps(params: List[String]) {
-    def mkParams: String = {
-      addString(new StringBuilder(), start = "?", sep = "&").toString
+    def mkParams(start: String = "?", sep: String = "&"): String = {
+      addString(new StringBuilder(), start, sep).toString
     }
 
     private def addString(b: StringBuilder,

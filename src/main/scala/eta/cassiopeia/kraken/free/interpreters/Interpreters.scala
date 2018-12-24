@@ -68,8 +68,12 @@ object Interpreters {
         Kleisli[Future, Map[String, String], A] { credentials =>
           fa match {
             case GetAccountBalance => privateApi.getAccountBalance(credentials)
+
             case GetTradeBalance(aClass, asset) =>
               privateApi.getTradeBalance(credentials, aClass, asset)
+
+            case GetOpenOrders(trades, userref) =>
+              privateApi.getOpenOrders(credentials, trades, userref)
           }
         }
     }
