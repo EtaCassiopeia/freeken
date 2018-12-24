@@ -49,4 +49,28 @@ trait HttpJSupport {
         _.result.isDefined,
         _.result.get,
         e => JsonParsingException(e.error.mkString(","), response.body))
+
+  implicit class ParameterOps(params: List[String]) {
+    def mkParams: String = {
+      addString(new StringBuilder(), start = "?", sep = "&").toString
+    }
+
+    private def addString(b: StringBuilder,
+                          start: String,
+                          sep: String): StringBuilder = {
+      var first = true
+
+      for (x <- params) {
+        if (first) {
+          b append start
+          b append x
+          first = false
+        } else {
+          b append sep
+          b append x
+        }
+      }
+      b
+    }
+  }
 }

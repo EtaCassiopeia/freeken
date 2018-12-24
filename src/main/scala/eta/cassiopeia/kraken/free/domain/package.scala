@@ -250,4 +250,41 @@ package object domain {
     }
   }
 
+  case class TradeBalance(equivalentBalance: String,
+                          tradeBalance: String,
+                          marginAmount: String,
+                          unrealizedNetProfit: String,
+                          costBasis: String,
+                          floatingValuation: String,
+                          equity: String,
+                          freeMargin: String,
+                          marginLevel: Option[String])
+
+  object TradeBalance {
+    implicit val decodeTradeBalance: Decoder[TradeBalance] = Decoder.instance {
+      c =>
+        for {
+          equivalentBalance <- c.downField("eb").as[String]
+          tradeBalance <- c.downField("tb").as[String]
+          marginAmount <- c.downField("m").as[String]
+          unrealizedNetProfit <- c.downField("n").as[String]
+          costBasis <- c.downField("c").as[String]
+          floatingValuation <- c.downField("v").as[String]
+          equity <- c.downField("e").as[String]
+          freeMargin <- c.downField("mf").as[String]
+          marginLevel <- c.downField("ml").as[Option[String]]
+        } yield
+          TradeBalance(
+            equivalentBalance,
+            tradeBalance,
+            marginAmount,
+            unrealizedNetProfit,
+            costBasis,
+            floatingValuation,
+            equity,
+            freeMargin,
+            marginLevel
+          )
+    }
+  }
 }
