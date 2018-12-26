@@ -38,7 +38,7 @@ class PrivateApi(implicit apiUrls: KrakenApiUrls, ec: ExecutionContext)
   def getTradeBalance(
       credentials: Map[String, String],
       aClass: Option[String],
-      asset: Option[String]): Future[KrakenResponse[List[TradeBalance]]] = {
+      asset: Option[String]): Future[KrakenResponse[TradeBalance]] = {
 
     val params =
       List(aClass.map("aclass" -> _), asset.map("asset" -> _)).flatten.toMap
@@ -46,7 +46,7 @@ class PrivateApi(implicit apiUrls: KrakenApiUrls, ec: ExecutionContext)
     val request =
       postSignedRequest(credentials, path = "/0/private/TradeBalance", params)
 
-    toEntity[List[TradeBalance]](request.asString, decodeEntity)
+    toEntity[TradeBalance](request.asString, decodeEntity)
   }
 
   def getOpenOrders(

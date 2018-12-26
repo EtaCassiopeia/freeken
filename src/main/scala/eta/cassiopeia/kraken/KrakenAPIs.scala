@@ -52,9 +52,9 @@ class KrakenPrivateAPI()(implicit O: PrivateOps[KrakenOp]) {
   def getAccountBalance(): KrakenIO[KrakenResponse[Map[String, String]]] =
     O.getAccountBalance
 
-  def getTradeBalance(aClass: Option[String] = None,
-                      asset: Option[String] = None)
-    : KrakenIO[KrakenResponse[List[TradeBalance]]] =
+  def getTradeBalance(
+      aClass: Option[String] = None,
+      asset: Option[String] = None): KrakenIO[KrakenResponse[TradeBalance]] =
     O.getTradeBalance(aClass, asset)
 
   def getOpenTrades(

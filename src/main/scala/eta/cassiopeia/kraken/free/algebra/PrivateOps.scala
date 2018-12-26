@@ -13,7 +13,7 @@ case object GetAccountBalance
     extends PrivateOp[KrakenResponse[Map[String, String]]]
 
 case class GetTradeBalance(aClass: Option[String], asset: Option[String])
-    extends PrivateOp[KrakenResponse[List[TradeBalance]]]
+    extends PrivateOp[KrakenResponse[TradeBalance]]
 
 case class GetOpenOrders(trades: Option[Boolean], userref: Option[String])
     extends PrivateOp[KrakenResponse[OpenOrder]]
@@ -24,7 +24,7 @@ class PrivateOps[F[_]](implicit I: InjectK[PrivateOp, F]) {
 
   def getTradeBalance(
       aClass: Option[String],
-      asset: Option[String]): Free[F, KrakenResponse[List[TradeBalance]]] =
+      asset: Option[String]): Free[F, KrakenResponse[TradeBalance]] =
     Free.inject[PrivateOp, F](GetTradeBalance(aClass, asset))
 
   def getOpenTrades(

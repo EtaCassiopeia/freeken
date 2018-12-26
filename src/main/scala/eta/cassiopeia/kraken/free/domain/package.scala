@@ -338,7 +338,7 @@ package object domain {
   }
 
   case class Order(referralTransactionId: Option[String],
-                   userReferenceId: Option[String],
+                   userReferenceId: Option[Long],
                    status: OrderStatus,
                    timestamp: Double,
                    startTime: Double,
