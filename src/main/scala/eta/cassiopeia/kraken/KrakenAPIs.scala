@@ -3,6 +3,7 @@ package eta.cassiopeia.kraken
 import eta.cassiopeia.kraken.KrakenResponses.{KrakenIO, KrakenResponse}
 import eta.cassiopeia.kraken.app.KrakenOp
 import eta.cassiopeia.kraken.free.algebra.{PrivateOps, PublicOps}
+import eta.cassiopeia.kraken.free.domain.CloseTime.CloseTime
 import eta.cassiopeia.kraken.free.domain._
 
 class KrakenPublicAPI()(implicit O: PublicOps[KrakenOp]) {
@@ -57,8 +58,17 @@ class KrakenPrivateAPI()(implicit O: PrivateOps[KrakenOp]) {
       asset: Option[String] = None): KrakenIO[KrakenResponse[TradeBalance]] =
     O.getTradeBalance(aClass, asset)
 
-  def getOpenTrades(
+  def getOpenOrders(
       trades: Option[Boolean] = Some(false),
       userref: Option[String] = None): KrakenIO[KrakenResponse[OpenOrder]] =
-    O.getOpenTrades(trades, userref)
+    O.getOpenOrders(trades, userref)
+
+  def getClosedOrders(trades: Option[Boolean] = Some(false),
+                      userref: Option[String] = None,
+                      start: Option[Long] = None,
+                      end: Option[Long] = None,
+                      ofs: Option[Int] = None,
+                      closeTime: Option[CloseTime] = None)
+    : KrakenIO[KrakenResponse[ClosedOrder]] =
+    O.getClosedOrders(trades, userref, start, end, ofs, closeTime)
 }

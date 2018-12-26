@@ -383,4 +383,19 @@ package object domain {
     implicit val decodeOpenOrder: Decoder[OpenOrder] =
       Decoder.forProduct1("open")(OpenOrder.apply)
   }
+
+  object CloseTime extends Enumeration {
+    type CloseTime = Value
+    val open, close, both = Value
+
+    implicit val decodeCloseTime: Decoder[CloseTime.Value] =
+      Decoder.enumDecoder(CloseTime)
+  }
+
+  case class ClosedOrder(closed: Option[Map[String, Order]], count: Int)
+
+  object ClosedOrder {
+    implicit val decodeClosedOrder: Decoder[ClosedOrder] =
+      Decoder.forProduct2("closed", "count")(ClosedOrder.apply)
+  }
 }

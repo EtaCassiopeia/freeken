@@ -2,7 +2,13 @@ package eta.cassiopeia.kraken.api
 
 import eta.cassiopeia.kraken.KrakenApiUrls
 import eta.cassiopeia.kraken.KrakenResponses.KrakenResponse
-import eta.cassiopeia.kraken.free.domain.{OpenOrder, Order, TradeBalance}
+import eta.cassiopeia.kraken.free.domain.CloseTime.CloseTime
+import eta.cassiopeia.kraken.free.domain.{
+  ClosedOrder,
+  OpenOrder,
+  Order,
+  TradeBalance
+}
 import scalaj.http.{Http, HttpRequest}
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -64,5 +70,32 @@ class PrivateApi(implicit apiUrls: KrakenApiUrls, ec: ExecutionContext)
                         params = params)
 
     toEntity[OpenOrder](request.asString, decodeEntity)
+  }
+
+  def getClosedOrders(
+      credentials: Map[String, String],
+      trades: Option[Boolean],
+      userref: Option[String],
+      start: Option[Long],
+      end: Option[Long],
+      ofs: Option[Int],
+      closeTime: Option[CloseTime]): Future[KrakenResponse[ClosedOrder]] = {
+
+    val params =
+      List(
+        trades.map("trades" -> _.toString.toLowerCase),
+        userref.map("userref" -> _),
+        start.map("start" -> _.toString),
+        end.map("end" -> _.toString),
+        ofs.map("ofs" -> _.toString),
+        closeTime.map("closetime" -> _.toString)
+      ).flatten.toMap
+
+    val request =
+      postSignedRequest(credentials,
+                        path = "/0/private/ClosedOrders",
+                        params = params)
+
+    toEntity[ClosedOrder](request.asString, decodeEntity)
   }
 }

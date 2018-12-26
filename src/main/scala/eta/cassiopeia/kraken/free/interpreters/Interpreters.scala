@@ -74,6 +74,15 @@ object Interpreters {
 
             case GetOpenOrders(trades, userref) =>
               privateApi.getOpenOrders(credentials, trades, userref)
+
+            case GetClosedOrder(trades, userref, start, end, ofs, closeTime) =>
+              privateApi.getClosedOrders(credentials,
+                                         trades,
+                                         userref,
+                                         start,
+                                         end,
+                                         ofs,
+                                         closeTime)
           }
         }
     }
