@@ -2,6 +2,7 @@ package eta.cassiopeia.kraken.free.algebra
 
 import cats.InjectK
 import cats.free.Free
+import com.sun.tools.hat.internal.server.RefsByTypeQuery
 import eta.cassiopeia.kraken.KrakenResponses.KrakenResponse
 import eta.cassiopeia.kraken.free.domain.CloseTime.CloseTime
 import eta.cassiopeia.kraken.free.domain.{
@@ -32,6 +33,11 @@ case class GetClosedOrder(trades: Option[Boolean],
                           closeTime: Option[CloseTime])
     extends PrivateOp[KrakenResponse[ClosedOrder]]
 
+case class QueryOrders(txid: Vector[String],
+                       trades: Option[Boolean],
+                       userref: Option[String])
+    extends PrivateOp[KrakenResponse[Map[String, Order]]]
+
 class PrivateOps[F[_]](implicit I: InjectK[PrivateOp, F]) {
   def getAccountBalance: Free[F, KrakenResponse[Map[String, String]]] =
     Free.inject[PrivateOp, F](GetAccountBalance)
@@ -55,6 +61,12 @@ class PrivateOps[F[_]](implicit I: InjectK[PrivateOp, F]) {
       closeTime: Option[CloseTime]): Free[F, KrakenResponse[ClosedOrder]] =
     Free.inject[PrivateOp, F](
       GetClosedOrder(trades, userref, start, end, ofs, closeTime))
+
+  def queryOrders(
+      txid: Vector[String],
+      trades: Option[Boolean],
+      userref: Option[String]): Free[F, KrakenResponse[Map[String, Order]]] =
+    Free.inject[PrivateOp, F](QueryOrders(txid, trades, userref))
 }
 
 object PrivateOps {

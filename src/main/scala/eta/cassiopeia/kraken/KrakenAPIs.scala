@@ -71,4 +71,10 @@ class KrakenPrivateAPI()(implicit O: PrivateOps[KrakenOp]) {
                       closeTime: Option[CloseTime] = None)
     : KrakenIO[KrakenResponse[ClosedOrder]] =
     O.getClosedOrders(trades, userref, start, end, ofs, closeTime)
+
+  def queryOrders(txid: Vector[String],
+                  trades: Option[Boolean] = Some(false),
+                  userref: Option[String] = None,
+  ): KrakenIO[KrakenResponse[Map[String, Order]]] =
+    O.queryOrders(txid, trades, userref)
 }

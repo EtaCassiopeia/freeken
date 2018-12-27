@@ -22,7 +22,7 @@ class PrivateApi(implicit apiUrls: KrakenApiUrls, ec: ExecutionContext)
       params: Map[String, String] = Map.empty): HttpRequest = {
     val nonce = System.currentTimeMillis()
     val postData = "nonce=" + nonce.toString + params
-      .map(e => e._1 + "=" + e._2)
+      .map { case (k, v) => s"$k=$v" }
       .toList
       .mkParams(start = "&")
     val signature =
@@ -31,7 +31,7 @@ class PrivateApi(implicit apiUrls: KrakenApiUrls, ec: ExecutionContext)
       Map("API-Key" -> credentials("API-Key"), "API-Sign" -> signature)
     Http(url = s"${apiUrls.baseUrl}$path")
       .headers(headers)
-      .postForm(List("nonce" -> nonce.toString) ++ params.toList)
+      .postForm(("nonce" -> nonce.toString) +: params.toList)
   }
 
   def getAccountBalance(credentials: Map[String, String])
@@ -97,5 +97,21 @@ class PrivateApi(implicit apiUrls: KrakenApiUrls, ec: ExecutionContext)
                         params = params)
 
     toEntity[ClosedOrder](request.asString, decodeEntity)
+  }
+
+  def queryOrders(
+      credentials: Map[String, String],
+      txid: Vector[String],
+      trades: Option[Boolean],
+      userref: Option[String]): Future[KrakenResponse[Map[String, Order]]] = {
+    val params = List(trades.map("trades" -> _.toString.toLowerCase),
+                      userref.map("userref" -> _),
+                      Some("txid" -> txid.mkString(","))).flatten.toMap
+
+    val request = postSignedRequest(credentials,
+                                    path = "/0/private/QueryOrders",
+                                    params = params)
+
+    toEntity[Map[String, Order]](request.asString, decodeEntity)
   }
 }

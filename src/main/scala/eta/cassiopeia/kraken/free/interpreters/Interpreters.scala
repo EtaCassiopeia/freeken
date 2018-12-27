@@ -83,6 +83,9 @@ object Interpreters {
                                          end,
                                          ofs,
                                          closeTime)
+
+            case QueryOrders(txid, trades, userref) =>
+              privateApi.queryOrders(credentials, txid, trades, userref)
           }
         }
     }
