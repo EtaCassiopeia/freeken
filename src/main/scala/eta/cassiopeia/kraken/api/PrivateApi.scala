@@ -3,7 +3,7 @@ package eta.cassiopeia.kraken.api
 import eta.cassiopeia.kraken.KrakenApiUrls
 import eta.cassiopeia.kraken.KrakenResponses.KrakenResponse
 import eta.cassiopeia.kraken.free.domain.CloseTime.CloseTime
-import eta.cassiopeia.kraken.free.domain.TradeType.PositionType
+import eta.cassiopeia.kraken.free.domain.TradeType.TradeType
 import eta.cassiopeia.kraken.free.domain._
 import scalaj.http.{Http, HttpRequest}
 
@@ -54,11 +54,11 @@ class PrivateApi(implicit apiUrls: KrakenApiUrls, ec: ExecutionContext)
   def getOpenOrders(
       credentials: Map[String, String],
       trades: Option[Boolean],
-      userref: Option[String]): Future[KrakenResponse[OpenOrder]] = {
+      userRef: Option[String]): Future[KrakenResponse[OpenOrder]] = {
 
     val params =
       List(trades.map("trades" -> _.toString.toLowerCase),
-           userref.map("userref" -> _)).flatten.toMap
+           userRef.map("userref" -> _)).flatten.toMap
 
     val request =
       postSignedRequest(credentials,
@@ -71,7 +71,7 @@ class PrivateApi(implicit apiUrls: KrakenApiUrls, ec: ExecutionContext)
   def getClosedOrders(
       credentials: Map[String, String],
       trades: Option[Boolean],
-      userref: Option[String],
+      userRef: Option[String],
       start: Option[Long],
       end: Option[Long],
       ofs: Option[Int],
@@ -80,7 +80,7 @@ class PrivateApi(implicit apiUrls: KrakenApiUrls, ec: ExecutionContext)
     val params =
       List(
         trades.map("trades" -> _.toString.toLowerCase),
-        userref.map("userref" -> _),
+        userRef.map("userref" -> _),
         start.map("start" -> _.toString),
         end.map("end" -> _.toString),
         ofs.map("ofs" -> _.toString),
@@ -97,12 +97,12 @@ class PrivateApi(implicit apiUrls: KrakenApiUrls, ec: ExecutionContext)
 
   def queryOrders(
       credentials: Map[String, String],
-      txid: Vector[String],
+      transactionId: Vector[String],
       trades: Option[Boolean],
-      userref: Option[String]): Future[KrakenResponse[Map[String, Order]]] = {
+      userRef: Option[String]): Future[KrakenResponse[Map[String, Order]]] = {
     val params = List(trades.map("trades" -> _.toString.toLowerCase),
-                      userref.map("userref" -> _),
-                      Some("txid" -> txid.mkString(","))).flatten.toMap
+                      userRef.map("userref" -> _),
+                      Some("txid" -> transactionId.mkString(","))).flatten.toMap
 
     val request = postSignedRequest(credentials,
                                     path = "/0/private/QueryOrders",
@@ -113,7 +113,7 @@ class PrivateApi(implicit apiUrls: KrakenApiUrls, ec: ExecutionContext)
 
   def getTradesHistory(
       credentials: Map[String, String],
-      positionType: Option[PositionType],
+      positionType: Option[TradeType],
       trades: Option[Boolean],
       start: Option[Long],
       end: Option[Long],
@@ -135,15 +135,29 @@ class PrivateApi(implicit apiUrls: KrakenApiUrls, ec: ExecutionContext)
 
   def queryTrades(
       credentials: Map[String, String],
-      txid: Vector[String],
+      transactionId: Vector[String],
       trades: Option[Boolean]): Future[KrakenResponse[Map[String, Trade]]] = {
     val params = List(trades.map("trades" -> _.toString.toLowerCase),
-                      Some("txid" -> txid.mkString(","))).flatten.toMap
+                      Some("txid" -> transactionId.mkString(","))).flatten.toMap
 
     val request = postSignedRequest(credentials,
                                     path = "/0/private/QueryTrades",
                                     params = params)
 
     toEntity[Map[String, Trade]](request.asString, decodeEntity)
+  }
+
+  def getOpenPositions(credentials: Map[String, String],
+                       transactionId: Vector[String],
+                       doCalcs: Option[Boolean])
+    : Future[KrakenResponse[Map[String, OpenPosition]]] = {
+    val params = List(doCalcs.map("docalcs" -> _.toString.toLowerCase),
+                      Some("txid" -> transactionId.mkString(","))).flatten.toMap
+
+    val request = postSignedRequest(credentials,
+                                    path = "/0/private/OpenPositions",
+                                    params = params)
+
+    toEntity[Map[String, OpenPosition]](request.asString, decodeEntity)
   }
 }

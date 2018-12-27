@@ -97,6 +97,9 @@ object Interpreters {
 
             case QueryTrades(txid, trades) =>
               privateApi.queryTrades(credentials, txid, trades)
+
+            case GetOpenPositions(transactionId, doCalcs) =>
+              privateApi.getOpenPositions(credentials, transactionId, doCalcs)
           }
         }
     }

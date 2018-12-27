@@ -400,7 +400,7 @@ package object domain {
   }
 
   object TradeType extends Enumeration {
-    type PositionType = Value
+    type TradeType = Value
     //FixMe
     /**
       * type = type of trade (optional)
@@ -416,7 +416,7 @@ package object domain {
       Decoder.enumDecoder(TradeType)
   }
 
-  case class Trade(ordertxid: String,
+  case class Trade(orderTransactionId: String,
                    pair: String,
                    time: Double,
                    buyOrSell: BuyOrSell,
@@ -427,12 +427,12 @@ package object domain {
                    vol: String,
                    margin: String,
                    misc: String,
-                   posstatus: Option[String],
-                   cprice: Option[String],
-                   ccost: Option[String],
-                   cfee: Option[String],
-                   cvol: Option[String],
-                   cmargin: Option[String],
+                   positionStatus: Option[String],
+                   closedPrice: Option[String],
+                   closedCost: Option[String],
+                   closedFee: Option[String],
+                   closedVol: Option[String],
+                   closedMargin: Option[String],
                    net: Option[String],
                    trades: Option[List[String]])
 
@@ -467,4 +467,38 @@ package object domain {
     implicit val decodeTradeHistory: Decoder[TradeHistory] =
       Decoder.forProduct2("trades", "count")(TradeHistory.apply)
   }
+
+  case class OpenPosition(orderTransactionId: String,
+                          pair: String,
+                          time: Double,
+                          buyOrSell: BuyOrSell,
+                          orderType: OrderType,
+                          cost: String,
+                          fee: String,
+                          vol: String,
+                          volClosed: String,
+                          margin: String,
+                          value: String,
+                          net: String,
+                          misc: String,
+                          oFlags: String)
+
+  object OpenPosition {
+    implicit val decodeOpenPosition: Decoder[OpenPosition] =
+      Decoder.forProduct14("ordertxid",
+                           "pair",
+                           "time",
+                           "type",
+                           "ordertype",
+                           "cost",
+                           "fee",
+                           "vol",
+                           "vol_closed",
+                           "margin",
+                           "value",
+                           "net",
+                           "misc",
+                           "oflags")(OpenPosition.apply)
+  }
+
 }
