@@ -57,6 +57,9 @@ case class GetLedgersInfo(aClass: Option[String],
                           offset: Option[Int])
     extends PrivateOp[KrakenResponse[LedgerInfo]]
 
+case class QueryLedgers(ledgerIds: Vector[String])
+    extends PrivateOp[KrakenResponse[Map[String, Ledger]]]
+
 class PrivateOps[F[_]](implicit I: InjectK[PrivateOp, F]) {
   def getAccountBalance: Free[F, KrakenResponse[Map[String, String]]] =
     Free.inject[PrivateOp, F](GetAccountBalance)
@@ -113,6 +116,10 @@ class PrivateOps[F[_]](implicit I: InjectK[PrivateOp, F]) {
                      offset: Option[Int]): Free[F, KrakenResponse[LedgerInfo]] =
     Free.inject[PrivateOp, F](
       GetLedgersInfo(aClass, asset, ledgerType, start, end, offset))
+
+  def queryLedgers(
+      ledgerIds: Vector[String]): Free[F, KrakenResponse[Map[String, Ledger]]] =
+    Free.inject[PrivateOp, F](QueryLedgers(ledgerIds))
 }
 
 object PrivateOps {

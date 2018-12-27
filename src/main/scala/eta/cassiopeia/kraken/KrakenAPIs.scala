@@ -106,4 +106,8 @@ class KrakenPrivateAPI()(implicit O: PrivateOps[KrakenOp]) {
       end: Option[Long] = None,
       offset: Option[Int] = None): KrakenIO[KrakenResponse[LedgerInfo]] =
     O.getLedgersInfo(aClass, asset, ledgerType, start, end, offset)
+
+  def queryLedgers(ledgerIds: Vector[String])
+    : KrakenIO[KrakenResponse[Map[String, Ledger]]] =
+    O.queryLedgers(ledgerIds)
 }

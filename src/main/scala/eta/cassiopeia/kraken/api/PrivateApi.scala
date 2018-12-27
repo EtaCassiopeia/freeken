@@ -185,4 +185,17 @@ class PrivateApi(implicit apiUrls: KrakenApiUrls, ec: ExecutionContext)
 
     toEntity[LedgerInfo](request.asString, decodeEntity)
   }
+
+  def queryLedgers(credentials: Map[String, String], ledgerIds: Vector[String])
+    : Future[KrakenResponse[Map[String, Ledger]]] = {
+    val params = Map("id" -> ledgerIds.mkString(","))
+
+    val request = postSignedRequest(credentials,
+                                    path = "/0/private/QueryLedgers",
+                                    params = params)
+
+    println(request.toString)
+
+    toEntity[Map[String, Ledger]](request.asString, decodeEntity)
+  }
 }

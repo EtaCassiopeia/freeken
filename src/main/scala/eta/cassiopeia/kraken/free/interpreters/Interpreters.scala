@@ -114,6 +114,9 @@ object Interpreters {
                                         start,
                                         end,
                                         offset)
+
+            case QueryLedgers(ledgerIds) =>
+              privateApi.queryLedgers(credentials, ledgerIds)
           }
         }
     }
