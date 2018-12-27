@@ -4,7 +4,7 @@ import eta.cassiopeia.kraken.KrakenResponses.{KrakenIO, KrakenResponse}
 import eta.cassiopeia.kraken.app.KrakenOp
 import eta.cassiopeia.kraken.free.algebra.{PrivateOps, PublicOps}
 import eta.cassiopeia.kraken.free.domain.CloseTime.CloseTime
-import eta.cassiopeia.kraken.free.domain.PositionType.PositionType
+import eta.cassiopeia.kraken.free.domain.TradeType.PositionType
 import eta.cassiopeia.kraken.free.domain._
 
 class KrakenPublicAPI()(implicit O: PublicOps[KrakenOp]) {

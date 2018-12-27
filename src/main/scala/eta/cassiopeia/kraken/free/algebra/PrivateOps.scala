@@ -5,7 +5,7 @@ import cats.free.Free
 import com.sun.tools.hat.internal.server.RefsByTypeQuery
 import eta.cassiopeia.kraken.KrakenResponses.KrakenResponse
 import eta.cassiopeia.kraken.free.domain.CloseTime.CloseTime
-import eta.cassiopeia.kraken.free.domain.PositionType.PositionType
+import eta.cassiopeia.kraken.free.domain.TradeType.PositionType
 import eta.cassiopeia.kraken.free.domain._
 
 import scala.language.higherKinds

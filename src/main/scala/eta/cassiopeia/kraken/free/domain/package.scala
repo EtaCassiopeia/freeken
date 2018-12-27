@@ -399,12 +399,21 @@ package object domain {
       Decoder.forProduct2("closed", "count")(ClosedOrder.apply)
   }
 
-  object PositionType extends Enumeration {
+  object TradeType extends Enumeration {
     type PositionType = Value
+    //FixMe
+    /**
+      * type = type of trade (optional)
+      * all = all types (default)
+      * any position = any position (open or closed)
+      * closed position = positions that have been closed
+      * closing position = any trade closing all or part of a position
+      * no position = non-positional trades
+      */
     val all, any, closed, closing, no = Value
 
-    implicit val decodePositionType: Decoder[PositionType.Value] =
-      Decoder.enumDecoder(PositionType)
+    implicit val decodeTradeType: Decoder[TradeType.Value] =
+      Decoder.enumDecoder(TradeType)
   }
 
   case class Trade(ordertxid: String,
