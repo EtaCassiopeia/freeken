@@ -3,6 +3,7 @@ package eta.cassiopeia.kraken.api
 import eta.cassiopeia.kraken.KrakenApiUrls
 import eta.cassiopeia.kraken.KrakenResponses.KrakenResponse
 import eta.cassiopeia.kraken.free.domain.CloseTime.CloseTime
+import eta.cassiopeia.kraken.free.domain.LedgerType.LedgerType
 import eta.cassiopeia.kraken.free.domain.TradeType.TradeType
 import eta.cassiopeia.kraken.free.domain._
 import scalaj.http.{Http, HttpRequest}
@@ -117,13 +118,13 @@ class PrivateApi(implicit apiUrls: KrakenApiUrls, ec: ExecutionContext)
       trades: Option[Boolean],
       start: Option[Long],
       end: Option[Long],
-      ofs: Option[Int]): Future[KrakenResponse[TradeHistory]] = {
+      offset: Option[Int]): Future[KrakenResponse[TradeHistory]] = {
     val params = List(
       positionType.map("type" -> _.toString),
       trades.map("trades" -> _.toString.toLowerCase),
       start.map("start" -> _.toString),
       end.map("end" -> _.toString),
-      ofs.map("ofs" -> _.toString)
+      offset.map("ofs" -> _.toString)
     ).flatten.toMap
 
     val request = postSignedRequest(credentials,
@@ -159,5 +160,29 @@ class PrivateApi(implicit apiUrls: KrakenApiUrls, ec: ExecutionContext)
                                     params = params)
 
     toEntity[Map[String, OpenPosition]](request.asString, decodeEntity)
+  }
+
+  def getLedgersInfo(
+      credentials: Map[String, String],
+      aClass: Option[String],
+      asset: Option[Vector[String]],
+      ledgerType: Option[LedgerType],
+      start: Option[Long],
+      end: Option[Long],
+      offset: Option[Int]): Future[KrakenResponse[LedgerInfo]] = {
+    val params = List(
+      aClass.map("aclass" -> _),
+      asset.map("asset" -> _.mkString(",")),
+      ledgerType.map("type" -> _.toString),
+      start.map("start" -> _.toString),
+      end.map("end" -> _.toString),
+      offset.map("ofs" -> _.toString)
+    ).flatten.toMap
+
+    val request = postSignedRequest(credentials,
+                                    path = "/0/private/Ledgers",
+                                    params = params)
+
+    toEntity[LedgerInfo](request.asString, decodeEntity)
   }
 }

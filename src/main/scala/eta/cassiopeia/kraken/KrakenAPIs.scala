@@ -4,6 +4,7 @@ import eta.cassiopeia.kraken.KrakenResponses.{KrakenIO, KrakenResponse}
 import eta.cassiopeia.kraken.app.KrakenOp
 import eta.cassiopeia.kraken.free.algebra.{PrivateOps, PublicOps}
 import eta.cassiopeia.kraken.free.domain.CloseTime.CloseTime
+import eta.cassiopeia.kraken.free.domain.LedgerType.LedgerType
 import eta.cassiopeia.kraken.free.domain.TradeType.TradeType
 import eta.cassiopeia.kraken.free.domain._
 
@@ -68,10 +69,10 @@ class KrakenPrivateAPI()(implicit O: PrivateOps[KrakenOp]) {
                       userRef: Option[String] = None,
                       start: Option[Long] = None,
                       end: Option[Long] = None,
-                      ofs: Option[Int] = None,
+                      offset: Option[Int] = None,
                       closeTime: Option[CloseTime] = None)
     : KrakenIO[KrakenResponse[ClosedOrder]] =
-    O.getClosedOrders(trades, userRef, start, end, ofs, closeTime)
+    O.getClosedOrders(trades, userRef, start, end, offset, closeTime)
 
   def queryOrders(transactionId: Vector[String],
                   trades: Option[Boolean] = Some(false),
@@ -84,8 +85,8 @@ class KrakenPrivateAPI()(implicit O: PrivateOps[KrakenOp]) {
       trades: Option[Boolean] = Some(false),
       start: Option[Long] = None,
       end: Option[Long] = None,
-      ofs: Option[Int] = None): KrakenIO[KrakenResponse[TradeHistory]] =
-    O.getTradesHistory(positionType, trades, start, end, ofs)
+      offset: Option[Int] = None): KrakenIO[KrakenResponse[TradeHistory]] =
+    O.getTradesHistory(positionType, trades, start, end, offset)
 
   def queryTrades(transactionId: Vector[String],
                   trades: Option[Boolean] = Some(false))
@@ -96,4 +97,13 @@ class KrakenPrivateAPI()(implicit O: PrivateOps[KrakenOp]) {
                        doCalcs: Option[Boolean] = Some(false))
     : KrakenIO[KrakenResponse[Map[String, OpenPosition]]] =
     O.getOpenPositions(transactionId, doCalcs)
+
+  def getLedgersInfo(
+      aClass: Option[String] = None,
+      asset: Option[Vector[String]] = Some(Vector("all")),
+      ledgerType: Option[LedgerType] = Some(LedgerType.all),
+      start: Option[Long] = None,
+      end: Option[Long] = None,
+      offset: Option[Int] = None): KrakenIO[KrakenResponse[LedgerInfo]] =
+    O.getLedgersInfo(aClass, asset, ledgerType, start, end, offset)
 }

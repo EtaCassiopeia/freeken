@@ -100,6 +100,20 @@ object Interpreters {
 
             case GetOpenPositions(transactionId, doCalcs) =>
               privateApi.getOpenPositions(credentials, transactionId, doCalcs)
+
+            case GetLedgersInfo(aClass,
+                                asset,
+                                ledgerType,
+                                start,
+                                end,
+                                offset) =>
+              privateApi.getLedgersInfo(credentials,
+                                        aClass,
+                                        asset,
+                                        ledgerType,
+                                        start,
+                                        end,
+                                        offset)
           }
         }
     }

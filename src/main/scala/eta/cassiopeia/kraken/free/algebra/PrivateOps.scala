@@ -5,6 +5,7 @@ import cats.free.Free
 import com.sun.tools.hat.internal.server.RefsByTypeQuery
 import eta.cassiopeia.kraken.KrakenResponses.KrakenResponse
 import eta.cassiopeia.kraken.free.domain.CloseTime.CloseTime
+import eta.cassiopeia.kraken.free.domain.LedgerType.LedgerType
 import eta.cassiopeia.kraken.free.domain.TradeType.TradeType
 import eta.cassiopeia.kraken.free.domain._
 
@@ -25,7 +26,7 @@ case class GetClosedOrder(trades: Option[Boolean],
                           userref: Option[String],
                           start: Option[Long],
                           end: Option[Long],
-                          ofs: Option[Int],
+                          offset: Option[Int],
                           closeTime: Option[CloseTime])
     extends PrivateOp[KrakenResponse[ClosedOrder]]
 
@@ -38,7 +39,7 @@ case class GetTradesHistory(positionType: Option[TradeType],
                             trades: Option[Boolean],
                             start: Option[Long],
                             end: Option[Long],
-                            ofs: Option[Int])
+                            offset: Option[Int])
     extends PrivateOp[KrakenResponse[TradeHistory]]
 
 case class QueryTrades(transactionId: Vector[String], trades: Option[Boolean])
@@ -47,6 +48,14 @@ case class QueryTrades(transactionId: Vector[String], trades: Option[Boolean])
 case class GetOpenPositions(transactionId: Vector[String],
                             doCalcs: Option[Boolean])
     extends PrivateOp[KrakenResponse[Map[String, OpenPosition]]]
+
+case class GetLedgersInfo(aClass: Option[String],
+                          asset: Option[Vector[String]],
+                          ledgerType: Option[LedgerType],
+                          start: Option[Long],
+                          end: Option[Long],
+                          offset: Option[Int])
+    extends PrivateOp[KrakenResponse[LedgerInfo]]
 
 class PrivateOps[F[_]](implicit I: InjectK[PrivateOp, F]) {
   def getAccountBalance: Free[F, KrakenResponse[Map[String, String]]] =
@@ -59,18 +68,18 @@ class PrivateOps[F[_]](implicit I: InjectK[PrivateOp, F]) {
 
   def getOpenOrders(
       trades: Option[Boolean],
-      userref: Option[String]): Free[F, KrakenResponse[OpenOrder]] =
-    Free.inject[PrivateOp, F](GetOpenOrders(trades, userref))
+      userRef: Option[String]): Free[F, KrakenResponse[OpenOrder]] =
+    Free.inject[PrivateOp, F](GetOpenOrders(trades, userRef))
 
   def getClosedOrders(
       trades: Option[Boolean],
       userRef: Option[String],
       start: Option[Long],
       end: Option[Long],
-      ofs: Option[Int],
+      offset: Option[Int],
       closeTime: Option[CloseTime]): Free[F, KrakenResponse[ClosedOrder]] =
     Free.inject[PrivateOp, F](
-      GetClosedOrder(trades, userRef, start, end, ofs, closeTime))
+      GetClosedOrder(trades, userRef, start, end, offset, closeTime))
 
   def queryOrders(
       transactionId: Vector[String],
@@ -83,9 +92,9 @@ class PrivateOps[F[_]](implicit I: InjectK[PrivateOp, F]) {
       trades: Option[Boolean],
       start: Option[Long],
       end: Option[Long],
-      ofs: Option[Int]): Free[F, KrakenResponse[TradeHistory]] =
+      offset: Option[Int]): Free[F, KrakenResponse[TradeHistory]] =
     Free.inject[PrivateOp, F](
-      GetTradesHistory(positionType, trades, start, end, ofs))
+      GetTradesHistory(positionType, trades, start, end, offset))
 
   def queryTrade(
       transactionId: Vector[String],
@@ -95,6 +104,15 @@ class PrivateOps[F[_]](implicit I: InjectK[PrivateOp, F]) {
   def getOpenPositions(transactionId: Vector[String], doCalcs: Option[Boolean])
     : Free[F, KrakenResponse[Map[String, OpenPosition]]] =
     Free.inject[PrivateOp, F](GetOpenPositions(transactionId, doCalcs))
+
+  def getLedgersInfo(aClass: Option[String],
+                     asset: Option[Vector[String]],
+                     ledgerType: Option[LedgerType],
+                     start: Option[Long],
+                     end: Option[Long],
+                     offset: Option[Int]): Free[F, KrakenResponse[LedgerInfo]] =
+    Free.inject[PrivateOp, F](
+      GetLedgersInfo(aClass, asset, ledgerType, start, end, offset))
 }
 
 object PrivateOps {

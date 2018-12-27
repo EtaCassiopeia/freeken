@@ -1,6 +1,7 @@
 package eta.cassiopeia.kraken.free
 
 import eta.cassiopeia.kraken.free.domain.BuyOrSell.BuyOrSell
+import eta.cassiopeia.kraken.free.domain.LedgerType.LedgerType
 import eta.cassiopeia.kraken.free.domain.OrderStatus
 import eta.cassiopeia.kraken.free.domain.OrderStatus.OrderStatus
 import eta.cassiopeia.kraken.free.domain.OrderType.OrderType
@@ -499,6 +500,42 @@ package object domain {
                            "net",
                            "misc",
                            "oflags")(OpenPosition.apply)
+  }
+
+  object LedgerType extends Enumeration {
+    type LedgerType = Value
+    val all, deposit, withdrawal, trade, margin, rollover = Value
+
+    implicit val decodeLedgerType: Decoder[LedgerType.Value] =
+      Decoder.enumDecoder(LedgerType)
+  }
+
+  case class Ledger(referenceId: String,
+                    time: Double,
+                    ledgerType: LedgerType,
+                    aClass: String,
+                    asset: String,
+                    amount: String,
+                    fee: String,
+                    balance: String)
+
+  object Ledger {
+    implicit val decodeLedger: Decoder[Ledger] =
+      Decoder.forProduct8("refid",
+                          "time",
+                          "type",
+                          "aclass",
+                          "asset",
+                          "amount",
+                          "fee",
+                          "balance")(Ledger.apply)
+  }
+
+  case class LedgerInfo(ledger: Map[String, Ledger])
+
+  object LedgerInfo {
+    implicit val decodeLedgerInfo: Decoder[LedgerInfo] =
+      Decoder.forProduct1("ledger")(LedgerInfo.apply)
   }
 
 }
