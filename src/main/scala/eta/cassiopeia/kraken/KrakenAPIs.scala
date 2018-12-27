@@ -110,4 +110,10 @@ class KrakenPrivateAPI()(implicit O: PrivateOps[KrakenOp]) {
   def queryLedgers(ledgerIds: Vector[String])
     : KrakenIO[KrakenResponse[Map[String, Ledger]]] =
     O.queryLedgers(ledgerIds)
+
+  def getTradeVolume(pair: Option[Vector[String]] = None,
+                     feeInfo: Option[Boolean] = Some(true))
+    : KrakenIO[KrakenResponse[TradeVolume]] =
+    O.getTradeVolume(pair, feeInfo)
+
 }

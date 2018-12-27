@@ -117,6 +117,9 @@ object Interpreters {
 
             case QueryLedgers(ledgerIds) =>
               privateApi.queryLedgers(credentials, ledgerIds)
+
+            case GetTradeVolume(pair, feeInfo) =>
+              privateApi.getTradeVolume(credentials, pair, feeInfo)
           }
         }
     }

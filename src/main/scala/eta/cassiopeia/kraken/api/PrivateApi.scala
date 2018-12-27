@@ -198,4 +198,18 @@ class PrivateApi(implicit apiUrls: KrakenApiUrls, ec: ExecutionContext)
 
     toEntity[Map[String, Ledger]](request.asString, decodeEntity)
   }
+
+  def getTradeVolume(
+      credentials: Map[String, String],
+      pair: Option[Vector[String]],
+      feeInfo: Option[Boolean]): Future[KrakenResponse[TradeVolume]] = {
+    val params = List(pair.map("pair" -> _.mkString(",")),
+                      feeInfo.map("fee_info" -> _.toString)).flatten.toMap
+
+    val request = postSignedRequest(credentials,
+                                    path = "/0/private/TradeVolume",
+                                    params = params)
+
+    toEntity[TradeVolume](request.asString, decodeEntity)
+  }
 }
