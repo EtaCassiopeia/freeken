@@ -132,4 +132,18 @@ class PrivateApi(implicit apiUrls: KrakenApiUrls, ec: ExecutionContext)
 
     toEntity[TradeHistory](request.asString, decodeEntity)
   }
+
+  def queryTrades(
+      credentials: Map[String, String],
+      txid: Vector[String],
+      trades: Option[Boolean]): Future[KrakenResponse[Map[String, Trade]]] = {
+    val params = List(trades.map("trades" -> _.toString.toLowerCase),
+                      Some("txid" -> txid.mkString(","))).flatten.toMap
+
+    val request = postSignedRequest(credentials,
+                                    path = "/0/private/QueryTrades",
+                                    params = params)
+
+    toEntity[Map[String, Trade]](request.asString, decodeEntity)
+  }
 }

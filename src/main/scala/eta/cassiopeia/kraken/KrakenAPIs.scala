@@ -86,4 +86,8 @@ class KrakenPrivateAPI()(implicit O: PrivateOps[KrakenOp]) {
       end: Option[Long] = None,
       ofs: Option[Int] = None): KrakenIO[KrakenResponse[TradeHistory]] =
     O.getTradesHistory(positionType, trades, start, end, ofs)
+
+  def queryTrades(txid: Vector[String], trades: Option[Boolean] = Some(false))
+    : KrakenIO[KrakenResponse[Map[String, Trade]]] =
+    O.queryTrade(txid, trades)
 }

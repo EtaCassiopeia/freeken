@@ -33,24 +33,16 @@ case class QueryOrders(txid: Vector[String],
                        trades: Option[Boolean],
                        userref: Option[String])
     extends PrivateOp[KrakenResponse[Map[String, Order]]]
-/*
-type = type of trade (optional)
-    all = all types (default)
-    any position = any position (open or closed)
-    closed position = positions that have been closed
-    closing position = any trade closing all or part of a position
-    no position = non-positional trades
-trades = whether or not to include trades related to position in output (optional.  default = false)
-start = starting unix timestamp or trade tx id of results (optional.  exclusive)
-end = ending unix timestamp or trade tx id of results (optional.  inclusive)
-ofs = result offset
- */
+
 case class GetTradesHistory(positionType: Option[PositionType],
                             trades: Option[Boolean],
                             start: Option[Long],
                             end: Option[Long],
                             ofs: Option[Int])
     extends PrivateOp[KrakenResponse[TradeHistory]]
+
+case class QueryTrades(txid: Vector[String], trades: Option[Boolean])
+    extends PrivateOp[KrakenResponse[Map[String, Trade]]]
 
 class PrivateOps[F[_]](implicit I: InjectK[PrivateOp, F]) {
   def getAccountBalance: Free[F, KrakenResponse[Map[String, String]]] =
@@ -90,6 +82,11 @@ class PrivateOps[F[_]](implicit I: InjectK[PrivateOp, F]) {
       ofs: Option[Int]): Free[F, KrakenResponse[TradeHistory]] =
     Free.inject[PrivateOp, F](
       GetTradesHistory(positionType, trades, start, end, ofs))
+
+  def queryTrade(
+      txid: Vector[String],
+      trades: Option[Boolean]): Free[F, KrakenResponse[Map[String, Trade]]] =
+    Free.inject[PrivateOp, F](QueryTrades(txid, trades))
 }
 
 object PrivateOps {
