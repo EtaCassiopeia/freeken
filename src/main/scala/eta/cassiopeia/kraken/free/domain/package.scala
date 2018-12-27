@@ -398,4 +398,64 @@ package object domain {
     implicit val decodeClosedOrder: Decoder[ClosedOrder] =
       Decoder.forProduct2("closed", "count")(ClosedOrder.apply)
   }
+
+  object PositionType extends Enumeration {
+    type PositionType = Value
+    val all, any, closed, closing, no = Value
+
+    implicit val decodePositionType: Decoder[PositionType.Value] =
+      Decoder.enumDecoder(PositionType)
+  }
+
+  case class Trade(ordertxid: String,
+                   pair: String,
+                   time: Double,
+                   buyOrSell: BuyOrSell,
+                   orderType: OrderType,
+                   price: String,
+                   cost: String,
+                   fee: String,
+                   vol: String,
+                   margin: String,
+                   misc: String,
+                   posstatus: Option[String],
+                   cprice: Option[String],
+                   ccost: Option[String],
+                   cfee: Option[String],
+                   cvol: Option[String],
+                   cmargin: Option[String],
+                   net: Option[String],
+                   trades: Option[List[String]])
+
+  object Trade {
+    implicit val decodeTrade: Decoder[Trade] =
+      Decoder.forProduct19(
+        "ordertxid",
+        "pair",
+        "time",
+        "type",
+        "ordertype",
+        "price",
+        "cost",
+        "fee",
+        "vol",
+        "margin",
+        "misc",
+        "posstatus",
+        "cprice",
+        "ccost",
+        "cfee",
+        "cvol",
+        "cmargin",
+        "net",
+        "trades"
+      )(Trade.apply)
+  }
+
+  case class TradeHistory(trades: Map[String, Trade], count: Int)
+
+  object TradeHistory {
+    implicit val decodeTradeHistory: Decoder[TradeHistory] =
+      Decoder.forProduct2("trades", "count")(TradeHistory.apply)
+  }
 }

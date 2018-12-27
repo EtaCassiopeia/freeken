@@ -86,6 +86,14 @@ object Interpreters {
 
             case QueryOrders(txid, trades, userref) =>
               privateApi.queryOrders(credentials, txid, trades, userref)
+
+            case GetTradesHistory(positionType, trades, start, end, ofs) =>
+              privateApi.getTradesHistory(credentials,
+                                          positionType,
+                                          trades,
+                                          start,
+                                          end,
+                                          ofs)
           }
         }
     }

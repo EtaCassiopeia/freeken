@@ -4,6 +4,7 @@ import eta.cassiopeia.kraken.KrakenResponses.{KrakenIO, KrakenResponse}
 import eta.cassiopeia.kraken.app.KrakenOp
 import eta.cassiopeia.kraken.free.algebra.{PrivateOps, PublicOps}
 import eta.cassiopeia.kraken.free.domain.CloseTime.CloseTime
+import eta.cassiopeia.kraken.free.domain.PositionType.PositionType
 import eta.cassiopeia.kraken.free.domain._
 
 class KrakenPublicAPI()(implicit O: PublicOps[KrakenOp]) {
@@ -77,4 +78,12 @@ class KrakenPrivateAPI()(implicit O: PrivateOps[KrakenOp]) {
                   userref: Option[String] = None,
   ): KrakenIO[KrakenResponse[Map[String, Order]]] =
     O.queryOrders(txid, trades, userref)
+
+  def getTradesHistory(
+      positionType: Option[PositionType] = None,
+      trades: Option[Boolean] = Some(false),
+      start: Option[Long] = None,
+      end: Option[Long] = None,
+      ofs: Option[Int] = None): KrakenIO[KrakenResponse[TradeHistory]] =
+    O.getTradesHistory(positionType, trades, start, end, ofs)
 }
