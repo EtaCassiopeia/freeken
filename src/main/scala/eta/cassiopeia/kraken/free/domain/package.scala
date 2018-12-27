@@ -538,12 +538,12 @@ package object domain {
       Decoder.forProduct1("ledger")(LedgerInfo.apply)
   }
 
-  case class Fee(fee: String,
-                 minFee: String,
-                 maxFee: String,
-                 nextFee: String,
-                 nextVoulme: String,
-                 tierVolume: String)
+  case class Fee(fee: Double,
+                 minFee: Double,
+                 maxFee: Double,
+                 nextFee: Double,
+                 nextVolume: Double,
+                 tierVolume: Double)
 
   case object Fee {
     implicit val decodeFee: Decoder[Fee] =
@@ -557,8 +557,8 @@ package object domain {
 
   case class TradeVolume(currency: String,
                          volume: String,
-                         fees: Option[Fee],
-                         feesMaker: Option[Fee])
+                         fees: Option[Map[String,Fee]],
+                         feesMaker: Option[Map[String,Fee]])
 
   object TradeVolume {
     implicit val decodeFee: Decoder[TradeVolume] =
